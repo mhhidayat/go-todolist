@@ -1,0 +1,65 @@
+{{ define "content" }}
+
+<div class="d-flex justify-content-end">
+  <a href="/create-todo" class="btn btn-success btn-sm">Create TODO +</a>
+</div>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Title</th>
+      <th scope="col">Description</th>
+      <th scope="col">Status</th>
+      <th scope="col">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{ range .Todos }}
+    <tr>
+      <th scope="row">{{ .Increment }}</th>
+      <td>{{ .Title }}</td>
+      <td>{{ if .Description }}{{ .Description }}{{ else }}<span class="text-muted">-</span>{{ end }}</td>
+        {{ if .Done}}
+          <td><span class="badge bg-success">Done</span></td>
+        {{ else }}
+          <td><span class="badge bg-danger">On Progres</span></td>
+        {{ end }}
+      <td>
+        <button class="btn btn-sm btn-danger" onclick="deleteTodo('{{ .ID }}')"><i class="fa fa-trash"></i></button>
+        <a class="btn btn-sm btn-info" href="edit-todo/{{ .ID }}"><i class="fa fa-edit text-white"></i></a>
+      </td>
+    </tr>
+    {{ end }}
+  {{ if not .Todos }}
+  <tr>
+    <td colspan="5" class="text-center text-danger">No TODOs available</td>
+  </tr>
+  {{ end }}
+  </tbody>
+</table>
+
+<script>
+
+  function deleteTodo(id){
+    if (confirm("Are you sure you want to delete this TODO?")) {
+      fetch(`/delete-todo/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          window.location.reload();
+        } else {
+          alert('Failed to delete TODO');
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+  }
+
+</script>
+
+{{ end }}
